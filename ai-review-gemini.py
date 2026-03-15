@@ -4,7 +4,7 @@ from google import genai
 
 def get_gemini_review(diff_content):
     # 從環境變數讀取 API Key (SRE 最佳實踐，避免硬編碼)
-    api_key = os.getenv("gemini-api-key")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return "錯誤：找不到 GEMINI_API_KEY 環境變數。"
 

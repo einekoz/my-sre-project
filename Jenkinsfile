@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     environment {
-        GEMINI_API_KEY = credentials('gemini-api-key') // 從 Jenkins 的憑證管理中取得 API Key
+        GEMINI_API_KEY = credentials('GEMINI_API_KEY') // 從 Jenkins 的憑證管理中取得 API Key
     }
     stages {
         stage('Checkout') {
