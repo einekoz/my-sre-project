@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         // 從 Jenkins 憑證取得 API Key
-        GEMINI_API_KEY = credentials('GEMINI_API_KEY')
+        GEMINI_API_KEY = credentials('gemini-api-key')
     }
     stages {
         stage('Checkout') {
