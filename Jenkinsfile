@@ -19,10 +19,10 @@ pipeline {
             steps { 
                 withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_API_KEY')]) {
             // 關鍵點：在同一行中使用 export，或者用分號隔開
-            sh '''
-                export GEMINI_API_KEY=${GEMINI_API_KEY}
-                python3 ai-review-gemini.py
-            '''
+                sh '''
+                    export GEMINI_API_KEY=${GEMINI_API_KEY}
+                    python3 ai-review-gemini.py
+                '''
                 }
             }
         }
