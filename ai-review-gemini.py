@@ -1,11 +1,18 @@
 import os
-import google.generativeai as genai
+import sys
+from google import genai
 
 def get_gemini_review(diff_content):
-    # 設定 API Key
-    genai.configure(api_key=os.environ.get("gemini-api-key"))    
-    # 選擇模型（flash 速度快且便宜，適合做 CI/CD）
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # 從環境變數讀取 API Key (SRE 最佳實踐，避免硬編碼)
+    api_key = os.getenv("gemini-api-key")
+    if not api_key:
+        return "錯誤：找不到 GEMINI_API_KEY 環境變數。"
+
+    # 初始化最新的 GenAI Client
+    client = genai.Client(api_key=api_key)
+    
+    # 使用最新的模型名稱格式
+    model_id = "gemini-1.5-flash"
     
     prompt = f"""
     你是一位資深的 SRE 與資安專家。請針對以下程式碼的 git diff 內容進行審核：
@@ -17,13 +24,25 @@ def get_gemini_review(diff_content):
     {diff_content}
     """
     
-    response = model.generate_content(prompt)
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model=model_id,
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        return f"AI 審核過程發生錯誤：{str(e)}"
 
 if __name__ == "__main__":
-    if os.path.exists("change.diff"):
-        with open("change.diff", "r") as f:
+    diff_file = "change.diff"
+    if os.path.exists(diff_file):
+        with open(diff_file, "r", encoding="utf-8") as f:
             diff = f.read()
-        print(get_gemini_review(diff))
+        
+        if not diff.strip():
+            print("Diff 內容為空，跳過審核。")
+        else:
+            print("--- Gemini AI Code Review Report ---")
+            print(get_gemini_review(diff))
     else:
-        print("找不到 diff 檔案，跳過審核。")
+        print(f"找不到 {diff_file} 檔案，跳過審核。")
