@@ -7,33 +7,42 @@ def get_gemini_review(diff_content):
     if not api_key:
         return "DEBUG: 失敗，找不到 API Key"
 
-    client = genai.Client(api_key=api_key, http_options={'api_version': 'v1'})
+    # 1. 移除 http_options，讓 SDK 使用預設穩定的 v1beta 端點
+    # 2. 或是明確指定不帶 'models/' 前綴的名稱
+    client = genai.Client(api_key=api_key)
     
-    prompt = f"請針對以下程式碼差異提供簡短的 SRE 建議：\n{diff_content}"
+    # 嘗試最標準的模型 ID 格式
+    model_id = "gemini-1.5-flash"
+    
+    prompt = f"你是一位 SRE 專家，請審核以下代碼差異並給予建議：\n{diff_content}"
     
     try:
-        # 強制印出進度
-        print("DEBUG: 正在向 Gemini 發送請求...")
+        print(f"DEBUG: 正在向模型 {model_id} 發送請求...")
+        # 直接使用簡潔的調用
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model=model_id,
             contents=prompt
         )
-        print("DEBUG: 請求成功，準備印出結果")
+        print("DEBUG: 請求成功")
         return response.text
     except Exception as e:
-        return f"DEBUG: 發生例外錯誤: {str(e)}"
+        # 如果還是失敗，嘗試列出模型清單，這能徹底找出問題
+        try:
+            available_models = [m.name for m in client.models.list()]
+            return f"DEBUG: 發生錯誤。可用模型清單前三個為: {available_models[:3]}。錯誤內容: {str(e)}"
+        except:
+            return f"DEBUG: 發生例外錯誤: {str(e)}"
 
 if __name__ == "__main__":
-    # 強制將輸出流設為無緩衝
     sys.stdout.reconfigure(line_buffering=True)
-    
     print("DEBUG: 腳本啟動")
+    
     if os.path.exists("change.diff"):
-        with open("change.diff", "r") as f:
+        with open("change.diff", "r", encoding="utf-8") as f:
             diff = f.read()
         
-        # 只要檔案有東西就執行
         if len(diff.strip()) > 0:
+            print(f"DEBUG: 準備審核，Diff 長度: {len(diff)}")
             result = get_gemini_review(diff)
             print("\n=== Gemini Review Result ===")
             print(result)
