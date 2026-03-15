@@ -6,7 +6,7 @@ app = FastAPI()
 @app.get("/health")
 def health_check():
     # SRE 必備：提供給負載均衡器確認服務是否存活
-    return {"status": "healthy"}
+    return {"status": "it's testing"}
 
 @app.post("/face-detect")
 async def detect_face(file: UploadFile = File(...)):
