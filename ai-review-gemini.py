@@ -8,6 +8,13 @@ def get_gemini_review(diff_content):
     if not api_key:
         return "錯誤：找不到 GEMINI_API_KEY 環境變數。"
 
+# 偵錯用：印出 key 的長度（不要印出內容，以免洩漏在 Log）
+    if api_key:
+        print(f"DEBUG: 成功讀取 API Key，長度為: {len(api_key)}")
+    else:
+        print("DEBUG: Python 腳本內依然抓不到 GEMINI_API_KEY")
+        return "錯誤：找不到 GEMINI_API_KEY 環境變數。"
+
     # 初始化最新的 GenAI Client
     client = genai.Client(api_key=api_key)
     
