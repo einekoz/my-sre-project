@@ -17,9 +17,12 @@ pipeline {
         }
         stage('AI Code Review') {
             steps { 
-                // 現在系統已經有 python3 了！
-                sh 'if [ -z "$GEMINI_API_KEY" ]; then echo "API Key is EMPTY"; else echo "API Key is set (masked)"; fi'
-                sh 'python3 ai-review-gemini.py'
+                withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_API_KEY')]) {
+            // 關鍵點：在同一行中使用 export，或者用分號隔開
+            sh '''
+                export GEMINI_API_KEY=${GEMINI_API_KEY}
+                python3 ai-review-gemini.py
+            '''
             }
         }
     }
