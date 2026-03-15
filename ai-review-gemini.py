@@ -7,31 +7,31 @@ def get_gemini_review(diff_content):
     if not api_key:
         return "DEBUG: 失敗，找不到 API Key"
 
-    # 1. 移除 http_options，讓 SDK 使用預設穩定的 v1beta 端點
-    # 2. 或是明確指定不帶 'models/' 前綴的名稱
     client = genai.Client(api_key=api_key)
     
-    # 嘗試最標準的模型 ID 格式
-    model_id = "gemini-1.5-flash"
+    # 根據你的 ListModels 輸出，使用最新、最穩定的模型 ID
+    model_id = "gemini-2.5-flash"
     
-    prompt = f"你是一位 SRE 專家，請審核以下代碼差異並給予建議：\n{diff_content}"
+    prompt = f"""
+    你是一位資深的 SRE 與資安專家。請針對以下程式碼的 git diff 內容進行審核：
+    1. 找出潛在的安全性漏洞。
+    2. 提供程式碼優化建議（效能、可讀性）。
+    3. 特別針對 FastAPI 的異步處理與 face_recognition 的資源消耗給予建議。
+
+    代碼差異如下：
+    {diff_content}
+    """
     
     try:
-        print(f"DEBUG: 正在向模型 {model_id} 發送請求...")
-        # 直接使用簡潔的調用
+        print(f"DEBUG: 正在向最新模型 {model_id} 發送請求...")
         response = client.models.generate_content(
             model=model_id,
             contents=prompt
         )
-        print("DEBUG: 請求成功")
+        print("DEBUG: 請求成功！")
         return response.text
     except Exception as e:
-        # 如果還是失敗，嘗試列出模型清單，這能徹底找出問題
-        try:
-            available_models = [m.name for m in client.models.list()]
-            return f"DEBUG: 發生錯誤。可用模型清單前三個為: {available_models[:3]}。錯誤內容: {str(e)}"
-        except:
-            return f"DEBUG: 發生例外錯誤: {str(e)}"
+        return f"DEBUG: 嘗試使用 {model_id} 依然失敗: {str(e)}"
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(line_buffering=True)
