@@ -13,4 +13,4 @@ async def detect_face(file: UploadFile = File(...)):
     image = face_recognition.load_image_file(file.file)
     face_locations = face_recognition.face_locations(image)
     return {"face_count": len(face_locations), "locations": face_locations}
-#hey is test
+#hello
