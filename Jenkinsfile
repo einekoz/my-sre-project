@@ -17,7 +17,12 @@ pipeline {
             }
         }
         stage('AI Code Review') {
+            agent {
+                docker { image 'python:3.9-slim' } // 動態啟動一個 python 環境
+            }
             steps {
+                // 安裝依賴並執行
+                sh 'pip install google-generativeai'
                 sh 'python3 ai-review-gemini.py'
             }
         }
