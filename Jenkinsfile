@@ -18,6 +18,7 @@ pipeline {
         stage('AI Code Review') {
             steps { 
                 // 現在系統已經有 python3 了！
+                sh 'if [ -z "$GEMINI_API_KEY" ]; then echo "API Key is EMPTY"; else echo "API Key is set (masked)"; fi'
                 sh 'python3 ai-review-gemini.py'
             }
         }
