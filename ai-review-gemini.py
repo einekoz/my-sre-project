@@ -3,8 +3,7 @@ import google.generativeai as genai
 
 def get_gemini_review(diff_content):
     # 設定 API Key
-    genai.configure(api_key=os.getenv("AIzaSyB6OblaWhAzYvJc-PssoavWnCs1z-HwnSA"))
-    
+    genai.configure(api_key=os.environ.get("gemini-api-key"))    
     # 選擇模型（flash 速度快且便宜，適合做 CI/CD）
     model = genai.GenerativeModel('gemini-1.5-flash')
     
