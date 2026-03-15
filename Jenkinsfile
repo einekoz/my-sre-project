@@ -1,8 +1,7 @@
 pipeline {
-    agent any
+    agent any 
     environment {
-        // 從 Jenkins 憑證取得 API Key
-        GEMINI_API_KEY = credentials('gemini-api-key')
+        GEMINI_API_KEY = credentials('gemini-api-key') // 從 Jenkins 的憑證管理中取得 API Key
     }
     stages {
         stage('Checkout') {
@@ -12,17 +11,13 @@ pipeline {
         }
         stage('Generate Diff') {
             steps {
-                // 取得目前 commit 與前一個 commit 的差異
-                sh 'git diff HEAD~1 HEAD > change.diff'
+                // 確保 git diff 有內容，若沒差異會報錯，這裡加個 || true 預防
+                sh 'git diff HEAD~1 HEAD > change.diff || echo "No changes" > change.diff'
             }
         }
         stage('AI Code Review') {
-            agent {
-                docker { image 'python:3.9-slim' } // 動態啟動一個 python 環境
-            }
             steps {
-                // 安裝依賴並執行
-                sh 'pip install google-generativeai'
+                // 現在系統已經有 python3 了！
                 sh 'python3 ai-review-gemini.py'
             }
         }
