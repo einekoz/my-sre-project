@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     environment {
-        gemini-api-key = credentials('gemini-api-key') // 從 Jenkins 的憑證管理中取得 API Key
+        GEMINI_API_KEY = credentials('gemini-api-key') // 從 Jenkins 的憑證管理中取得 API Key
     }
     stages {
         stage('Checkout') {
@@ -16,7 +16,7 @@ pipeline {
             }
         }
         stage('AI Code Review') {
-            steps {
+            steps { 
                 // 現在系統已經有 python3 了！
                 sh 'python3 ai-review-gemini.py'
             }
