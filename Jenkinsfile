@@ -23,7 +23,8 @@ pipeline {
                 export GEMINI_API_KEY=${GEMINI_API_KEY}
                 python3 ai-review-gemini.py
             '''
+                }
             }
         }
-    }
+    }   
 }
