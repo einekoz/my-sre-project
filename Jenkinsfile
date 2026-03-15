@@ -18,11 +18,14 @@ pipeline {
         stage('AI Code Review') {
             steps { 
                 withCredentials([string(credentialsId: 'GEMINI_API_KEY', variable: 'GEMINI_API_KEY')]) {
-            // 關鍵點：在同一行中使用 export，或者用分號隔開
-                sh '''
-                    export GEMINI_API_KEY=${GEMINI_API_KEY}
-                    python3 ai-review-gemini.py
-                '''
+                    sh '''
+                        export GEMINI_API_KEY=${GEMINI_API_KEY}
+                        echo "--- 檢查開始 ---"
+                        # 強制輸出不緩衝，並顯示 diff 檔案大小
+                        ls -lh change.diff
+                        python3 -u ai-review-gemini.py
+                        echo "--- 檢查結束 ---"
+                    '''
                 }
             }
         }
